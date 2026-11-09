@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        font-family: 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
+    }
+
+    summary::-webkit-details-marker {
+        display: none;
+    }
+}
