@@ -1,13 +1,323 @@
+@import '@fontsource/lexend/600.css';
+@import '@fontsource/lexend/700.css';
+@import '@fontsource/nunito-sans/400.css';
+@import '@fontsource/nunito-sans/500.css';
+@import '@fontsource/nunito-sans/600.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --green: #1e7b3a;
+    --green-hover: #17652f;
+    --green-soft: #e8f4ea;
+    --orange: #f5a623;
+    --page: #f4f7f4;
+    --surface: #fff;
+    --border: #e3eae4;
+    --text: #1f2a24;
+    --muted: #55645b;
+    --danger: #d64545;
+}
+
 @layer base {
+    html {
+        font-family: 'Nunito Sans', system-ui, sans-serif;
+        font-size: 16px;
+    }
+
     body {
-        font-family: 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
+        position: relative;
+        isolation: isolate;
+        background: var(--page);
+        color: var(--text);
+        font-family: 'Nunito Sans', system-ui, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: 'Lexend', system-ui, sans-serif;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+        font: inherit;
     }
 
     summary::-webkit-details-marker {
         display: none;
+    }
+}
+
+@layer components {
+    .app-container {
+        width: min(calc(100% - 32px), 1100px);
+        margin-inline: auto;
+    }
+
+    .font-display {
+        font-family: 'Lexend', system-ui, sans-serif;
+    }
+
+    .background-illustration {
+        position: fixed;
+        z-index: 0;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    .background-frond {
+        position: absolute;
+        top: -3rem;
+        width: clamp(150px, 24vw, 340px);
+        height: clamp(180px, 30vw, 380px);
+        opacity: 0.12;
+    }
+
+    .background-frond-left {
+        left: -3.5rem;
+    }
+
+    .background-frond-right {
+        right: -3.5rem;
+        transform: scaleX(-1);
+    }
+
+    .background-hills {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: min(390px, 48vh);
+        width: 100%;
+    }
+
+    .background-tree-mobile {
+        display: none;
+    }
+
+    .page-surface {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--surface);
+        box-shadow: 0 4px 16px rgb(0 0 0 / 5%);
+    }
+
+    .dashboard-banner {
+        background: linear-gradient(135deg, #1e7b3a 0%, #2e9b50 100%);
+    }
+
+    .button-primary,
+    .button-secondary,
+    .button-danger {
+        display: inline-flex;
+        min-height: 46px;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border-radius: 10px;
+        padding: 0.625rem 1rem;
+        font-weight: 600;
+        font-family: 'Lexend', system-ui, sans-serif;
+        transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+    }
+
+    .button-primary {
+        border: 1px solid var(--green);
+        background: var(--green);
+        color: #fff;
+    }
+
+    .button-primary:hover {
+        border-color: var(--green-hover);
+        background: var(--green-hover);
+    }
+
+    .button-primary:disabled {
+        cursor: not-allowed;
+        opacity: 0.82;
+    }
+
+    .button-secondary {
+        border: 1px solid var(--green);
+        background: var(--surface);
+        color: var(--green);
+    }
+
+    .button-secondary:hover {
+        background: var(--green-soft);
+    }
+
+    .button-danger {
+        border: 1px solid var(--danger);
+        background: var(--surface);
+        color: var(--danger);
+    }
+
+    .button-danger:hover {
+        background: #fff1f1;
+    }
+
+    .form-control {
+        display: block;
+        min-height: 46px;
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--surface);
+        padding: 0.625rem 0.875rem;
+        color: var(--text);
+        font-size: 1rem;
+    }
+
+    .form-control:focus {
+        border-color: var(--green);
+        outline: 3px solid rgb(30 123 58 / 16%);
+        outline-offset: 1px;
+    }
+
+    .nav-link {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        border-radius: 10px;
+        padding: 0 0.875rem;
+        color: var(--muted);
+        font-weight: 500;
+    }
+
+    .nav-link:hover {
+        color: var(--green);
+    }
+
+    .nav-link-active {
+        background: var(--green-soft);
+        color: var(--green);
+    }
+
+    .summary-card {
+        position: relative;
+        min-height: 188px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--surface);
+        padding: 1.25rem;
+        box-shadow: 0 4px 16px rgb(0 0 0 / 5%);
+    }
+
+    .summary-card-profit {
+        border-top: 3px solid var(--orange);
+    }
+
+    .summary-card-icon {
+        display: flex;
+        height: 44px;
+        width: 44px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        background: var(--green-soft);
+        color: var(--green);
+    }
+
+    .summary-card-label {
+        margin-top: 1rem;
+        color: var(--muted);
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+    .summary-card .numeric-value {
+        font-family: 'Lexend', system-ui, sans-serif;
+        margin-top: 0.25rem;
+        color: var(--text);
+        font-size: 2.125rem;
+        font-weight: 700;
+        line-height: 1.2;
+        font-variant-numeric: tabular-nums lining-nums;
+    }
+
+    .numeric-data {
+        font-variant-numeric: tabular-nums lining-nums;
+    }
+
+    .menu-disabled {
+        display: inline-flex;
+        min-height: 44px;
+        cursor: not-allowed;
+        align-items: center;
+        padding: 0 0.875rem;
+        color: var(--muted);
+        opacity: 0.62;
+    }
+
+    .auth-panel {
+        background: linear-gradient(135deg, #1e7b3a 0%, #2e9b50 100%);
+    }
+
+    .auth-palm {
+        position: absolute;
+        right: -2rem;
+        bottom: -3rem;
+        width: min(70%, 390px);
+        height: 75%;
+        opacity: 0.15;
+        pointer-events: none;
+    }
+
+    :where(a, button, input, summary):focus-visible {
+        outline: 3px solid rgb(30 123 58 / 45%);
+        outline-offset: 3px;
+    }
+}
+
+.text-xs {
+    font-size: 0.875rem;
+    line-height: 1.35rem;
+}
+
+.text-sm {
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+
+@media (max-width: 639px) {
+    .summary-card {
+        min-height: 172px;
+        padding: 1rem;
+    }
+
+    .summary-card .numeric-value {
+        font-size: 1.875rem;
+    }
+
+    .background-frond {
+        width: 130px;
+        height: 170px;
+        opacity: 0.08;
+    }
+
+    .background-hills {
+        height: 250px;
+    }
+
+    .background-tree-desktop {
+        display: none;
+    }
+
+    .background-tree-mobile {
+        display: initial;
     }
 }

@@ -1,8 +1,7 @@
 <x-guest-layout>
-    <div class="mb-7">
-        <p class="text-sm font-semibold uppercase tracking-[0.16em] text-[#7a846f]">Mulai mencatat</p>
-        <h1 class="mt-2 text-2xl font-bold tracking-tight text-[#263a2f]">Buat akun</h1>
-        <p class="mt-2 text-sm text-[#788173]">Daftarkan akun untuk mengelola data kebun Anda.</p>
+    <div class="mb-6">
+        <h1 class="text-3xl font-semibold text-[var(--text)]">Buat akun</h1>
+        <p class="mt-1 text-[var(--muted)]">Isi data untuk mulai mencatat kebun.</p>
     </div>
 
     <form method="POST" action="{{ route('register') }}">
@@ -34,7 +33,7 @@
 
         <div class="flex flex-col gap-4">
             <x-primary-button class="w-full justify-center">Daftar</x-primary-button>
-            <p class="text-center text-sm text-[#788173]">Sudah punya akun? <a href="{{ route('login') }}" class="font-semibold text-[#315c3d] hover:underline">Masuk</a></p>
+            <p class="text-center text-[var(--muted)]">Sudah punya akun? <a href="{{ route('login') }}" class="font-semibold text-[var(--green)] hover:text-[var(--green-hover)]">Masuk</a></p>
         </div>
     </form>
 </x-guest-layout>

@@ -3,59 +3,113 @@
 @section('title', 'Kebun')
 
 @section('content')
-    <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <p class="text-sm font-semibold uppercase tracking-[0.16em] text-[#7a846f]">Data usaha</p>
-            <h1 class="mt-2 text-3xl font-bold tracking-tight text-[#263a2f]">Kebun dan blok</h1>
-            <p class="mt-2 text-sm text-[#788173]">Kelola lokasi dan luas kebun milik Anda.</p>
+            <h1 class="text-3xl font-semibold text-[var(--text)]">Kebun dan blok</h1>
+            <p class="mt-1 text-[var(--muted)]">Daftar kebun yang Bapak kelola.</p>
         </div>
-        <a href="{{ route('kebun.create') }}" class="inline-flex items-center justify-center rounded-full bg-[#315c3d] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#244a30]">
-            <span class="mr-2 text-lg leading-none" aria-hidden="true">+</span> Tambah kebun
+        <a href="{{ route('kebun.create') }}" class="button-primary">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Tambah kebun
         </a>
     </div>
 
     @if (session('success'))
-        <div class="mt-6 rounded-2xl border border-[#d5e4d1] bg-[#edf5e9] px-5 py-4 text-sm font-medium text-[#315c3d]" role="status">
+        <div class="mt-5 rounded-xl border border-[#b8d8c0] bg-[var(--green-soft)] px-4 py-3 font-medium text-[var(--green)]" role="status">
             {{ session('success') }}
         </div>
     @endif
 
     @if ($kebuns->isEmpty())
-        <section class="mt-8 rounded-3xl border border-dashed border-[#d8d9cb] bg-[#fffefa] px-6 py-14 text-center">
-            <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eef2e9] text-2xl text-[#315c3d]" aria-hidden="true">⌂</span>
-            <h2 class="mt-5 text-lg font-bold text-[#344839]">Belum ada kebun tercatat</h2>
-            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-[#788173]">Tambahkan kebun atau blok pertama agar data usaha Anda mulai tersusun.</p>
-            <a href="{{ route('kebun.create') }}" class="mt-6 inline-flex rounded-full bg-[#315c3d] px-5 py-3 text-sm font-semibold text-white hover:bg-[#244a30]">Tambah kebun</a>
+        <section class="page-surface mt-6 flex flex-col items-center gap-4 px-5 py-8 text-center sm:flex-row sm:text-left">
+            <svg class="h-[72px] w-[72px] shrink-0" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                <circle cx="40" cy="40" r="36" fill="#E8F4EA"/>
+                <path d="M39 69c5-18 5-33 2-47" stroke="#1E7B3A" stroke-width="3.5" stroke-linecap="round"/>
+                <path d="M41 28C32 19 24 17 17 19c6 6 13 10 23 11-11-8-16-15-16-23 8 5 13 11 17 22-1-13 2-22 8-29 3 9 2 18-5 30 9-11 17-17 27-17-4 8-11 15-26 20 13-4 23-3 29 3-9 4-19 4-31 1 11 5 17 12 19 19-9-3-17-10-22-21Z" fill="#1E7B3A" fill-opacity=".12" stroke="#1E7B3A" stroke-width="2" stroke-linejoin="round"/>
+                <g fill="#F5A623">
+                    <circle cx="39" cy="34" r="2.8"/>
+                    <circle cx="44" cy="37" r="2.8"/>
+                    <circle cx="39" cy="40" r="2.8"/>
+                </g>
+            </svg>
+            <p class="flex-1 font-medium text-[var(--text)]">Belum ada kebun. Mulai dengan menambah kebun.</p>
+            <a href="{{ route('kebun.create') }}" class="button-primary">Tambah kebun</a>
         </section>
     @else
-        <section class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            @foreach ($kebuns as $kebun)
-                <article class="flex flex-col rounded-3xl border border-[#e7e6dc] bg-[#fffefa] p-5 shadow-[0_8px_24px_rgba(47,65,48,0.04)]">
-                    <div class="flex items-start justify-between gap-3">
-                        <div>
-                            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#8a8c7c]">Kebun / blok</p>
-                            <h2 class="mt-2 text-xl font-bold text-[#315c3d]">{{ $kebun->nama }}</h2>
+        <div class="page-surface mt-6 overflow-hidden">
+            <table class="hidden w-full text-left md:table">
+                <thead class="bg-[#f4f7f4] text-[var(--muted)]">
+                    <tr class="text-sm font-medium">
+                        <th scope="col" class="px-5 py-3">Nama kebun / blok</th>
+                        <th scope="col" class="px-5 py-3">Lokasi</th>
+                        <th scope="col" class="numeric-data px-5 py-3 text-right">Luas</th>
+                        <th scope="col" class="px-5 py-3 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--border)]">
+                    @foreach ($kebuns as $kebun)
+                        <tr class="text-[var(--text)]">
+                            <th scope="row" class="px-5 py-4 text-left font-medium">{{ $kebun->nama }}</th>
+                            <td class="px-5 py-4 text-[var(--muted)]">{{ $kebun->lokasi }}</td>
+                            <td class="numeric-data px-5 py-4 text-right">{{ number_format((float) $kebun->luas_ha, 2, ',', '.') }} ha</td>
+                            <td class="px-5 py-3">
+                                <div class="flex justify-end gap-2">
+                                    <a href="{{ route('kebun.edit', $kebun) }}" class="button-secondary !min-h-11 !w-11 !p-0" aria-label="Ubah kebun {{ $kebun->nama }}">
+                                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="m14 5 5 5M4 20l4.5-1 10.7-10.7a2.1 2.1 0 0 0-3-3L5.5 16 4 20Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </a>
+                                    <form method="POST" action="{{ route('kebun.destroy', $kebun) }}" onsubmit="return confirm('Hapus kebun ini beserta semua catatan terkait? Data tidak dapat dikembalikan.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="button-danger !min-h-11 !w-11 !p-0" aria-label="Hapus kebun {{ $kebun->nama }}">
+                                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                                <path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v5m4-5v5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <div class="divide-y divide-[var(--border)] md:hidden">
+                @foreach ($kebuns as $kebun)
+                    <article class="p-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <h2 class="font-semibold text-[var(--text)]">{{ $kebun->nama }}</h2>
+                            <p class="numeric-data shrink-0 text-right font-semibold text-[var(--green)]">{{ number_format((float) $kebun->luas_ha, 2, ',', '.') }} ha</p>
                         </div>
-                        <span class="rounded-xl bg-[#eef2e9] px-3 py-2 text-sm font-bold text-[#52634f]">{{ number_format((float) $kebun->luas_ha, 2, ',', '.') }} <span class="text-xs font-medium">ha</span></span>
-                    </div>
-                    <div class="mt-5 border-t border-[#eeede5] pt-4">
-                        <p class="text-xs font-semibold uppercase tracking-wide text-[#919386]">Lokasi</p>
-                        <p class="mt-1 text-sm leading-6 text-[#556253]">{{ $kebun->lokasi }}</p>
-                    </div>
-                    <div class="mt-auto flex items-center justify-between gap-4 pt-6">
-                        <a href="{{ route('kebun.edit', $kebun) }}" class="rounded-full border border-[#d9dfd3] px-4 py-2 text-sm font-semibold text-[#315c3d] transition hover:bg-[#f1f4ec]">Ubah</a>
-                        <form method="POST" action="{{ route('kebun.destroy', $kebun) }}" onsubmit="return confirm('Hapus kebun ini beserta semua catatan terkait? Data tidak dapat dikembalikan.')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="rounded-full px-4 py-2 text-sm font-semibold text-[#9a5643] transition hover:bg-[#f9efea]">Hapus</button>
-                        </form>
-                    </div>
-                </article>
-            @endforeach
-        </section>
+                        <p class="mt-1 text-[var(--muted)]">{{ $kebun->lokasi }}</p>
+                        <div class="mt-4 flex gap-2">
+                            <a href="{{ route('kebun.edit', $kebun) }}" class="button-secondary flex-1">
+                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="m14 5 5 5M4 20l4.5-1 10.7-10.7a2.1 2.1 0 0 0-3-3L5.5 16 4 20Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Ubah
+                            </a>
+                            <form method="POST" action="{{ route('kebun.destroy', $kebun) }}" class="flex-1" onsubmit="return confirm('Hapus kebun ini beserta semua catatan terkait? Data tidak dapat dikembalikan.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="button-danger w-full">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M4 7h16M9 7V4h6v3m3 0-1 13H7L6 7m4 4v5m4-5v5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        </div>
 
         @if ($kebuns->hasPages())
-            <div class="mt-8">{{ $kebuns->links() }}</div>
+            <div class="mt-5">{{ $kebuns->links() }}</div>
         @endif
     @endif
 @endsection
