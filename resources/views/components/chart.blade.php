@@ -5,6 +5,7 @@
     'values',
     'unit' => '',
     'sparkline' => false,
+    'datasets' => null,
 ])
 
 <canvas
@@ -15,5 +16,8 @@
     data-chart-values="{{ json_encode($values, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
     data-chart-unit="{{ $unit }}"
     data-chart-sparkline="{{ $sparkline ? 'true' : 'false' }}"
+    @if ($datasets !== null)
+        data-chart-datasets="{{ json_encode($datasets, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
+    @endif
     {{ $attributes }}
 ></canvas>

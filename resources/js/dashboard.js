@@ -22,6 +22,9 @@ function initCharts() {
         const type = canvas.dataset.chartType;
         const labels = JSON.parse(canvas.dataset.chartLabels);
         const values = JSON.parse(canvas.dataset.chartValues);
+        const chartDatasets = canvas.dataset.chartDatasets
+            ? JSON.parse(canvas.dataset.chartDatasets)
+            : null;
         const unit = canvas.dataset.chartUnit || '';
         const isSparkline = canvas.dataset.chartSparkline === 'true';
         const isDoughnut = type === 'doughnut';
@@ -58,7 +61,7 @@ function initCharts() {
             interaction: { intersect: false, mode: 'index' },
             plugins: {
                 legend: {
-                    display: isDoughnut,
+                    display: isDoughnut || (chartDatasets !== null && chartDatasets.length > 1),
                     position: 'bottom',
                     labels: {
                         usePointStyle: true,
@@ -130,11 +133,21 @@ function initCharts() {
             options.elements = { line: { borderWidth: 2 } };
         }
 
+        const datasets = chartDatasets
+            ? chartDatasets.map((item, index) => ({
+                ...dataset,
+                label: item.label,
+                data: item.values,
+                backgroundColor: chartColors[index % chartColors.length],
+                borderColor: chartColors[index % chartColors.length],
+            }))
+            : [dataset];
+
         new Chart(canvas, {
             type: isArea || isSparkline ? 'line' : (isHorizontal ? 'bar' : type),
             data: {
                 labels,
-                datasets: [dataset],
+                datasets,
             },
             options: {
                 ...options,

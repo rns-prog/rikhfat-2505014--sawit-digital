@@ -62,15 +62,15 @@
             </span>
             Biaya
         </a>
-        <span class="sidebar-disabled" aria-disabled="true">
+        <a href="{{ route('laporan') }}" @class(['sidebar-link', 'sidebar-link-active' => request()->routeIs('laporan*')])>
             <span class="sidebar-icon">
                 <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M4 19.5V4.5m0 15h16M7 15l4-4 3 2 5-6m-4 0h4v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </span>
             Laporan
-        </span>
-        <a href="{{ route('dashboard') }}#jadwal" class="sidebar-link">
+        </a>
+        <span class="sidebar-disabled" aria-disabled="true">
             <span class="sidebar-icon">
                 <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <rect x="3.5" y="5" width="17" height="15.5" rx="2" stroke="currentColor" stroke-width="1.7"/>
@@ -78,7 +78,7 @@
                 </svg>
             </span>
             Jadwal
-        </a>
+        </span>
     </nav>
 
     <div class="sidebar-help">
