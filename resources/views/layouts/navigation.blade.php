@@ -1,48 +1,98 @@
-<header class="relative z-20 border-b border-[var(--border)] bg-[var(--surface)] shadow-[0_2px_12px_rgba(31,42,36,0.05)]">
-    <div class="app-container flex min-h-16 items-center justify-between gap-3">
-        <a href="{{ route('dashboard') }}" class="flex shrink-0 items-center gap-2 text-[var(--green)]" aria-label="Sawitku, beranda">
-            <svg class="h-8 w-8" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-                <path d="M20 35V18m0 7C17 17 10 13 4 14c2 7 7 11 16 11Zm0-3c3-8 9-12 16-11-2 7-7 11-16 11Zm0-8c-1-5-4-9-9-12m9 9c2-5 5-8 10-11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="20" cy="27" r="1.5" fill="var(--green)"/>
-            </svg>
-            <span class="font-display text-xl font-semibold">Sawitku</span>
-        </a>
+<div class="mobile-topbar">
+    <button id="sidebar-toggle" class="mobile-menu-button" type="button" aria-label="Buka menu" aria-controls="app-sidebar" aria-expanded="false">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+    </button>
+    <a href="{{ route('dashboard') }}" class="sidebar-brand !gap-2 !p-0 text-lg" aria-label="Sawitku, Dashboard">
+        <svg class="h-7 w-7" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+            <path d="M20 35V18m0 7C17 17 10 13 4 14c2 7 7 11 16 11Zm0-3c3-8 9-12 16-11-2 7-7 11-16 11Zm0-8c-1-5-4-9-9-12m9 9c2-5 5-8 10-11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Sawitku
+    </a>
+</div>
 
-        <nav class="hidden items-center gap-1 md:flex" aria-label="Navigasi utama">
-            <a href="{{ route('dashboard') }}" @class(['nav-link', 'nav-link-active' => request()->routeIs('dashboard')])>Dashboard</a>
-            <a href="{{ route('kebun.index') }}" @class(['nav-link', 'nav-link-active' => request()->routeIs('kebun.*')])>Kebun</a>
-            <span class="menu-disabled" aria-disabled="true">Panen</span>
-            <span class="menu-disabled" aria-disabled="true">Biaya</span>
-            <span class="menu-disabled" aria-disabled="true">Laporan</span>
-        </nav>
+<button id="sidebar-overlay" class="sidebar-overlay" type="button" aria-label="Tutup menu"></button>
 
-        <div class="hidden items-center gap-3 md:flex">
-            <span class="hidden max-w-40 truncate text-[var(--muted)] lg:inline">{{ ucwords(Auth::user()->name) }}</span>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="button-secondary">Keluar</button>
-            </form>
-        </div>
+<aside id="app-sidebar" class="app-sidebar" aria-label="Navigasi utama">
+    <a href="{{ route('dashboard') }}" class="sidebar-brand" aria-label="Sawitku, Dashboard">
+        <svg class="h-8 w-8" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+            <path d="M20 35V18m0 7C17 17 10 13 4 14c2 7 7 11 16 11Zm0-3c3-8 9-12 16-11-2 7-7 11-16 11Zm0-8c-1-5-4-9-9-12m9 9c2-5 5-8 10-11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Sawitku
+    </a>
 
-        <details class="relative md:hidden">
-            <summary class="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-lg border border-[var(--border)] text-[var(--green)] hover:bg-[var(--green-soft)]" aria-label="Buka menu">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                    <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
+    <p class="sidebar-greeting">Hi,
+        <strong>{{ ucwords(Auth::user()->name) }}</strong>
+    </p>
+
+    <nav class="sidebar-menu">
+        <a href="{{ route('dashboard') }}" @class(['sidebar-link', 'sidebar-link-active' => request()->routeIs('dashboard')])>
+            <span class="sidebar-icon">
+                <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/>
+                    <rect x="13.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/>
+                    <rect x="3.5" y="13.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/>
+                    <rect x="13.5" y="13.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/>
                 </svg>
-            </summary>
-            <nav class="absolute right-0 mt-2 w-64 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-lg" aria-label="Navigasi seluler">
-                <a href="{{ route('dashboard') }}" @class(['block min-h-11 rounded-lg px-4 py-2.5', 'bg-[var(--green-soft)] font-medium text-[var(--green)]' => request()->routeIs('dashboard'), 'text-[var(--text)]' => ! request()->routeIs('dashboard')])>Dashboard</a>
-                <a href="{{ route('kebun.index') }}" @class(['block min-h-11 rounded-lg px-4 py-2.5', 'bg-[var(--green-soft)] font-medium text-[var(--green)]' => request()->routeIs('kebun.*'), 'text-[var(--text)]' => ! request()->routeIs('kebun.*')])>Kebun</a>
-                <span class="block px-4 py-2.5 text-[var(--muted)] opacity-70" aria-disabled="true">Panen</span>
-                <span class="block px-4 py-2.5 text-[var(--muted)] opacity-70" aria-disabled="true">Biaya</span>
-                <span class="block px-4 py-2.5 text-[var(--muted)] opacity-70" aria-disabled="true">Laporan</span>
-                <div class="my-1 border-t border-[var(--border)]"></div>
-                <p class="truncate px-4 py-2 text-[var(--muted)]">{{ ucwords(Auth::user()->name) }}</p>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="min-h-11 w-full rounded-lg px-4 py-2.5 text-left font-medium text-[var(--green)] hover:bg-[var(--green-soft)]">Keluar</button>
-                </form>
-            </nav>
-        </details>
+            </span>
+            Dashboard
+        </a>
+        <a href="{{ route('kebun.index') }}" @class(['sidebar-link', 'sidebar-link-active' => request()->routeIs('kebun.*')])>
+            <span class="sidebar-icon">
+                <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M3 20.5h18M5.5 20V9.5h13V20M8 9.5V6h8v3.5M9 13h2m2 0h2m-6 3h2m2 0h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            Kebun
+        </a>
+        <span class="sidebar-disabled" aria-disabled="true">
+            <span class="sidebar-icon">
+                <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 20.5V10m0 5c-1.6-4-4.8-6-9-5.8 1.1 4.1 4.1 6.1 9 6.3Zm0-2.3c1.7-4.1 5-6 9-5.5-1.2 4.1-4.2 6-9 6Zm0-6c-.5-2-1.7-3.7-3.6-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            Panen
+        </span>
+        <span class="sidebar-disabled" aria-disabled="true">
+            <span class="sidebar-icon">
+                <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 3.5v17m4-13c0-1.8-1.8-3-4-3s-4 1.2-4 3 1.5 2.5 4 3.5 4 1.7 4 3.5-1.8 3-4 3-4-1.2-4-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                </svg>
+            </span>
+            Biaya
+        </span>
+        <span class="sidebar-disabled" aria-disabled="true">
+            <span class="sidebar-icon">
+                <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 19.5V4.5m0 15h16M7 15l4-4 3 2 5-6m-4 0h4v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            Laporan
+        </span>
+        <a href="{{ route('dashboard') }}#jadwal" class="sidebar-link">
+            <span class="sidebar-icon">
+                <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="3.5" y="5" width="17" height="15.5" rx="2" stroke="currentColor" stroke-width="1.7"/>
+                    <path d="M7.5 3.5v3M16.5 3.5v3M3.5 9.5h17M8 13h.01M12 13h.01M16 13h.01M8 16.5h.01M12 16.5h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                </svg>
+            </span>
+            Jadwal
+        </a>
+    </nav>
+
+    <div class="sidebar-help">
+        <strong>Bantuan</strong>
+        Perlu bantuan mengelola catatan kebun?
     </div>
-</header>
+
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit" class="sidebar-logout w-full">
+            <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M10 4H5.5A1.5 1.5 0 0 0 4 5.5v13A1.5 1.5 0 0 0 5.5 20H10m5-4 4-4-4-4m4 4H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Keluar
+        </button>
+    </form>
+</aside>

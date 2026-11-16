@@ -26,8 +26,8 @@
         <section class="page-surface mt-6 flex flex-col items-center gap-4 px-5 py-8 text-center sm:flex-row sm:text-left">
             <svg class="h-[72px] w-[72px] shrink-0" viewBox="0 0 80 80" fill="none" aria-hidden="true">
                 <circle cx="40" cy="40" r="36" fill="#E8F4EA"/>
-                <path d="M39 69c5-18 5-33 2-47" stroke="#1E7B3A" stroke-width="3.5" stroke-linecap="round"/>
-                <path d="M41 28C32 19 24 17 17 19c6 6 13 10 23 11-11-8-16-15-16-23 8 5 13 11 17 22-1-13 2-22 8-29 3 9 2 18-5 30 9-11 17-17 27-17-4 8-11 15-26 20 13-4 23-3 29 3-9 4-19 4-31 1 11 5 17 12 19 19-9-3-17-10-22-21Z" fill="#1E7B3A" fill-opacity=".12" stroke="#1E7B3A" stroke-width="2" stroke-linejoin="round"/>
+                <path d="M39 69c5-18 5-33 2-47" stroke="#1F4FB5" stroke-width="3.5" stroke-linecap="round"/>
+                <path d="M41 28C32 19 24 17 17 19c6 6 13 10 23 11-11-8-16-15-16-23 8 5 13 11 17 22-1-13 2-22 8-29 3 9 2 18-5 30 9-11 17-17 27-17-4 8-11 15-26 20 13-4 23-3 29 3-9 4-19 4-31 1 11 5 17 12 19 19-9-3-17-10-22-21Z" fill="#1F4FB5" fill-opacity=".12" stroke="#1F4FB5" stroke-width="2" stroke-linejoin="round"/>
                 <g fill="#F5A623">
                     <circle cx="39" cy="34" r="2.8"/>
                     <circle cx="44" cy="37" r="2.8"/>

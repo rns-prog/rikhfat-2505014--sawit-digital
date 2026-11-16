@@ -8,7 +8,6 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="min-h-screen antialiased">
-        <x-latar-kebun />
         <main class="relative z-10 mx-auto flex min-h-screen max-w-6xl items-center px-4 py-6 sm:px-6 lg:px-8">
             <div class="grid w-full overflow-hidden rounded-2xl md:grid-cols-2">
                 <section class="auth-panel relative hidden min-h-[38rem] flex-col justify-between overflow-hidden p-8 text-white md:flex lg:p-12">

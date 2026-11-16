@@ -3,116 +3,205 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    <section class="dashboard-banner relative isolate overflow-hidden rounded-2xl px-5 py-6 text-white sm:px-7 sm:py-7">
-        <svg class="pointer-events-none absolute -right-2 top-0 -z-10 h-full w-52 opacity-[0.08] sm:w-72" viewBox="0 0 220 180" fill="none" aria-hidden="true">
-            <path d="M170 181V65m0 47c-9-35-35-51-72-49 10 29 32 48 72 49Zm0-21c13-34 40-48 76-42-13 30-36 45-76 42Zm0-46c-5-23-18-41-39-54m39 40c10-21 25-37 47-49M92 181V105m0 30c-7-24-25-35-52-33 7 20 23 33 52 33Zm0-14c9-23 27-33 52-29-9 20-25 31-52 29Z" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <div class="relative z-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h1 class="text-2xl font-semibold text-white sm:text-3xl">Halo, {{ ucwords(Auth::user()->name) }}</h1>
-                <p class="mt-1 text-white/90">Ringkasan kebun Anda bulan ini</p>
+    <div class="dashboard-columns">
+        <div class="dashboard-center">
+            @php($sample = $dataContoh)
+
+            <div class="schedule-strip">
+                <div class="schedule-strip-message">
+                    <span class="schedule-countdown">{{ $sample['nextSchedule']['daysUntil'] }} hari lagi</span>
+                    <span>{{ $sample['nextSchedule']['title'] }} di {{ $sample['nextSchedule']['location'] }}</span>
+                </div>
+                <a href="#jadwal">Lihat jadwal</a>
             </div>
-            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <button type="button" disabled class="inline-flex min-h-11 items-center justify-center rounded-[10px] bg-white px-4 py-2 font-semibold text-[var(--green)] transition hover:bg-[var(--green-soft)] disabled:cursor-not-allowed disabled:opacity-85">Catat panen</button>
-                <button type="button" disabled class="inline-flex min-h-11 items-center justify-center rounded-[10px] border border-white/80 bg-transparent px-4 py-2 font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-85">Catat biaya</button>
-            </div>
+
+            <section class="revenue-hero" aria-label="Pendapatan bulan ini">
+                <svg class="hero-watermark" viewBox="0 0 220 220" fill="none" aria-hidden="true">
+                    <path d="M110 220V83m0 54C99 97 70 79 30 83c10 33 37 53 80 55Zm0-24c15-40 45-56 87-49-15 35-41 53-87 49Zm0-51c-6-27-21-48-46-63m46 47c12-25 30-44 56-58M58 220v-82m0 33c-7-25-25-37-54-35 8 22 25 35 54 35Z" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="110" cy="145" r="7" fill="#F59E0B"/>
+                    <circle cx="122" cy="153" r="7" fill="#F59E0B"/>
+                    <circle cx="108" cy="161" r="7" fill="#F59E0B"/>
+                </svg>
+                <div class="revenue-hero-top">
+                    <div>
+                        <p class="revenue-hero-label">Total pendapatan bulan ini</p>
+                        <p class="revenue-hero-value">Rp {{ number_format($sample['revenue']['total'], 0, ',', '.') }}</p>
+                        <div class="revenue-hero-foot">
+                            <span class="trend-positive">
+                                <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                    <path d="m3 10 4-4 3 3 3-4m-4 0h4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Naik {{ number_format($sample['revenue']['change'], 1, ',', '.') }}%
+                            </span>
+                            <span>dari bulan lalu</span>
+                            <span class="sample-badge">Data contoh</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-chart">
+                    <x-chart id="revenue-chart" type="area" :labels="$sample['revenue']['months']" :values="$sample['revenue']['values']" unit="Rp" />
+                </div>
+            </section>
+
+            <section class="stats-grid" aria-label="Statistik bulan ini">
+                @foreach ($sample['stats'] as $stat)
+                    <article class="stat-card">
+                        <div class="stat-title-row">
+                            <span>{{ $stat['title'] }}</span>
+                            <span class="sample-badge">Data contoh</span>
+                        </div>
+                        <p class="stat-value">{{ $stat['value'] }} {{ $stat['unit'] }}</p>
+                        <div class="stat-bottom">
+                            <p @class(['stat-change', 'is-down' => $stat['direction'] === 'down'])>
+                                @if ($stat['direction'] === 'up')
+                                    <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 10 4-4 3 3 3-4m-4 0h4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    <strong>Naik {{ number_format($stat['change'], 1, ',', '.') }}%</strong>
+                                @else
+                                    <svg class="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3 6 4 4 3-3 3 4m-4 0h4V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    <strong>Turun {{ number_format($stat['change'], 1, ',', '.') }}%</strong>
+                                @endif
+                                <span>vs bulan lalu</span>
+                            </p>
+                            <div class="stat-sparkline">
+                                <x-chart :id="'sparkline-'.$stat['key']" type="sparkline" :labels="$sample['revenue']['months']" :values="$stat['values']" sparkline />
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
+            </section>
+
+            <section class="charts-section" aria-labelledby="charts-title">
+                <div class="charts-section-title">
+                    <h2 id="charts-title">Grafik</h2>
+                </div>
+                <div class="charts-grid">
+                    @foreach (['harvest', 'fertilizer', 'wages', 'expenses', 'productivity'] as $chartKey)
+                        @php($chart = $sample['charts'][$chartKey])
+                        <article @class(['chart-card', 'chart-card-wide' => $chartKey === 'productivity'])>
+                            <div class="card-heading">
+                                <h3>{{ $chart['title'] }}</h3>
+                                <span class="sample-badge">Data contoh</span>
+                            </div>
+                            <div class="chart-plot">
+                                <x-chart :id="'chart-'.$chartKey" :type="$chart['type']" :labels="$chart['labels']" :values="$chart['values']" :unit="$chart['unit']" />
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </section>
+
+            <section class="charts-section" aria-labelledby="latest-harvests-title">
+                <div class="charts-section-title">
+                    <h2 id="latest-harvests-title">Panen terbaru</h2>
+                    <span class="sample-badge">Data contoh</span>
+                </div>
+                <div class="harvest-table-wrap">
+                    <table class="harvest-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Tanggal</th>
+                                <th scope="col">Kebun</th>
+                                <th scope="col">Berat</th>
+                                <th scope="col">Harga / kg</th>
+                                <th scope="col">Total</th>
+                                <th scope="col">Pembeli</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($sample['latestHarvests'] as $harvest)
+                                <tr>
+                                    <td>{{ $harvest['tanggal'] }}</td>
+                                    <td>{{ $harvest['kebun'] }}</td>
+                                    <td class="numeric-data">{{ number_format($harvest['berat'], 0, ',', '.') }} kg</td>
+                                    <td class="numeric-data">Rp {{ number_format($harvest['harga'], 0, ',', '.') }}</td>
+                                    <td class="table-amount">Rp {{ number_format($harvest['total'], 0, ',', '.') }}</td>
+                                    <td>{{ $harvest['pembeli'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="harvest-mobile-list">
+                    @foreach ($sample['latestHarvests'] as $harvest)
+                        <article class="harvest-mobile-item">
+                            <strong>{{ $harvest['kebun'] }} · {{ $harvest['tanggal'] }}</strong>
+                            <span>{{ number_format($harvest['berat'], 0, ',', '.') }} kg · Rp {{ number_format($harvest['harga'], 0, ',', '.') }}/kg</span>
+                            <span>{{ $harvest['pembeli'] }}</span>
+                            <span class="harvest-mobile-total">Rp {{ number_format($harvest['total'], 0, ',', '.') }}</span>
+                        </article>
+                    @endforeach
+                </div>
+                <p class="data-note">Data panen pada tabel ini adalah data contoh.</p>
+            </section>
         </div>
-    </section>
 
-    <section class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Ringkasan bulan ini">
-        <article class="summary-card">
-            <span class="summary-card-icon">
-                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M3.5 10 12 3.5 20.5 10v9.5h-17V10Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-                    <path d="M8.5 19.5v-6h7v6" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-                </svg>
-            </span>
-            <h2 class="summary-card-label">Jumlah kebun</h2>
-            <p class="numeric-value">{{ number_format($jumlahKebun, 0, ',', '.') }}</p>
-            <p class="mt-1 text-sm text-[var(--muted)]">kebun / blok</p>
-        </article>
-        <article class="summary-card">
-            <span class="summary-card-icon">
-                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M12 20.5V10m0 5c-1.6-4-4.8-6-9-5.8 1.1 4.1 4.1 6.1 9 6.3Zm0-2.3c1.7-4.1 5-6 9-5.5-1.2 4.1-4.2 6-9 6Zm0-6c-.5-2-1.7-3.7-3.6-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="12" cy="19.5" r="2" fill="currentColor"/>
-                </svg>
-            </span>
-            <h2 class="summary-card-label">Panen bulan ini</h2>
-            <p class="numeric-value">0 <span class="text-lg font-normal">kg</span></p>
-            <p class="mt-1 text-sm text-[var(--muted)]">Belum ada data</p>
-        </article>
-        <article class="summary-card">
-            <span class="summary-card-icon">
-                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M12 3.5v17m4-13c0-1.8-1.8-3-4-3s-4 1.2-4 3 1.5 2.5 4 3.5 4 1.7 4 3.5-1.8 3-4 3-4-1.2-4-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-                </svg>
-            </span>
-            <h2 class="summary-card-label">Biaya bulan ini</h2>
-            <p class="numeric-value"><span class="text-lg font-normal">Rp</span> 0</p>
-            <p class="mt-1 text-sm text-[var(--muted)]">Belum ada data</p>
-        </article>
-        <article class="summary-card summary-card-profit">
-            <span class="summary-card-icon">
-                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="m3.5 17 5.2-5.2 3.5 3.1 8.3-9m-6.5 0h6.5v6.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </span>
-            <h2 class="summary-card-label">Laba bulan ini</h2>
-            <p class="numeric-value"><span class="text-lg font-normal">Rp</span> 0</p>
-            <p class="mt-1 text-sm text-[var(--muted)]">Belum ada data</p>
-        </article>
-    </section>
+        <aside class="dashboard-right">
+            <section class="right-card" aria-labelledby="my-estates-title">
+                <div class="card-heading">
+                    <h2 id="my-estates-title">Kebun saya</h2>
+                    <a href="{{ route('kebun.index') }}" class="text-link">Lihat semua</a>
+                </div>
+                @if ($kebuns->isEmpty())
+                    <p class="empty-note">Belum ada kebun. Tambahkan kebun untuk mulai mengelola catatan.</p>
+                @else
+                    <div class="estate-list">
+                        @foreach ($kebuns as $kebun)
+                            <div class="estate-item">
+                                <span class="estate-avatar" aria-hidden="true">
+                                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                                        <path d="M3 20.5h18M5.5 20V9.5h13V20M8 9.5V6h8v3.5M9 13h2m2 0h2m-6 3h2m2 0h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </span>
+                                <span class="estate-meta">
+                                    <strong>{{ $kebun->nama }}</strong>
+                                    <span>{{ $kebun->lokasi }}</span>
+                                </span>
+                                <span class="estate-size">{{ number_format((float) $kebun->luas_ha, 2, ',', '.') }} ha</span>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+                <a href="{{ route('kebun.create') }}" class="button-primary mt-4 w-full">Tambah kebun</a>
+            </section>
 
-    @if ($jumlahKebun === 0)
-        <section class="page-surface mt-6 flex flex-col items-start gap-4 p-5 sm:flex-row sm:items-center sm:p-6">
-            <svg class="h-[72px] w-[72px] shrink-0" viewBox="0 0 80 80" fill="none" aria-hidden="true">
-                <circle cx="40" cy="40" r="36" fill="#E8F4EA"/>
-                <path d="M39 69c5-18 5-33 2-47" stroke="#1E7B3A" stroke-width="3.5" stroke-linecap="round"/>
-                <path d="M41 28C32 19 24 17 17 19c6 6 13 10 23 11-11-8-16-15-16-23 8 5 13 11 17 22-1-13 2-22 8-29 3 9 2 18-5 30 9-11 17-17 27-17-4 8-11 15-26 20 13-4 23-3 29 3-9 4-19 4-31 1 11 5 17 12 19 19-9-3-17-10-22-21Z" fill="#1E7B3A" fill-opacity=".12" stroke="#1E7B3A" stroke-width="2" stroke-linejoin="round"/>
-                <g fill="#F5A623">
-                    <circle cx="39" cy="34" r="2.8"/>
-                    <circle cx="44" cy="37" r="2.8"/>
-                    <circle cx="39" cy="40" r="2.8"/>
-                </g>
-            </svg>
-            <p class="flex-1 text-lg font-medium text-[var(--text)]">Mulai dengan menambah kebun</p>
-            <a href="{{ route('kebun.create') }}" class="button-primary">Tambah kebun</a>
-        </section>
-    @else
-        <section class="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-[1.25fr_1fr]">
-            <div>
-                <h2 class="mb-3 text-lg font-semibold text-[var(--text)]">Grafik panen</h2>
-                <div class="page-surface flex min-h-24 items-center gap-4 px-5 py-4">
-                    <svg class="h-[72px] w-[72px] shrink-0" viewBox="0 0 80 80" fill="none" aria-hidden="true">
-                        <circle cx="40" cy="40" r="36" fill="#E8F4EA"/>
-                        <path d="M39 69c5-18 5-33 2-47" stroke="#1E7B3A" stroke-width="3.5" stroke-linecap="round"/>
-                        <path d="M41 28C32 19 24 17 17 19c6 6 13 10 23 11-11-8-16-15-16-23 8 5 13 11 17 22-1-13 2-22 8-29 3 9 2 18-5 30 9-11 17-17 27-17-4 8-11 15-26 20 13-4 23-3 29 3-9 4-19 4-31 1 11 5 17 12 19 19-9-3-17-10-22-21Z" fill="#1E7B3A" fill-opacity=".12" stroke="#1E7B3A" stroke-width="2" stroke-linejoin="round"/>
-                        <g fill="#F5A623">
-                            <circle cx="39" cy="34" r="2.8"/>
-                            <circle cx="44" cy="37" r="2.8"/>
-                            <circle cx="39" cy="40" r="2.8"/>
-                        </g>
-                    </svg>
-                    <p class="text-[var(--muted)]">Belum ada data</p>
+            <section id="jadwal" class="right-card" aria-labelledby="schedule-title">
+                <div class="card-heading">
+                    <h2 id="schedule-title">Jadwal</h2>
+                    <span class="sample-badge">Data contoh</span>
                 </div>
-            </div>
-            <div>
-                <h2 class="mb-3 text-lg font-semibold text-[var(--text)]">Panen terbaru</h2>
-                <div class="page-surface flex min-h-24 items-center gap-4 px-5 py-4">
-                    <svg class="h-[72px] w-[72px] shrink-0" viewBox="0 0 80 80" fill="none" aria-hidden="true">
-                        <circle cx="40" cy="40" r="36" fill="#E8F4EA"/>
-                        <path d="M39 69c5-18 5-33 2-47" stroke="#1E7B3A" stroke-width="3.5" stroke-linecap="round"/>
-                        <path d="M41 28C32 19 24 17 17 19c6 6 13 10 23 11-11-8-16-15-16-23 8 5 13 11 17 22-1-13 2-22 8-29 3 9 2 18-5 30 9-11 17-17 27-17-4 8-11 15-26 20 13-4 23-3 29 3-9 4-19 4-31 1 11 5 17 12 19 19-9-3-17-10-22-21Z" fill="#1E7B3A" fill-opacity=".12" stroke="#1E7B3A" stroke-width="2" stroke-linejoin="round"/>
-                        <g fill="#F5A623">
-                            <circle cx="39" cy="34" r="2.8"/>
-                            <circle cx="44" cy="37" r="2.8"/>
-                            <circle cx="39" cy="40" r="2.8"/>
-                        </g>
-                    </svg>
-                    <p class="text-[var(--muted)]">Belum ada data</p>
+                <div class="flex items-center justify-between gap-2">
+                    <span id="calendar-month" class="calendar-month" aria-live="polite"></span>
+                    <div class="calendar-controls">
+                        <button type="button" data-calendar-step="-1" aria-label="Bulan sebelumnya">
+                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12 4-6 6 6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                        <button type="button" data-calendar-step="1" aria-label="Bulan berikutnya">
+                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m8 4 6 6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </section>
-    @endif
+                <div class="calendar-weekdays mt-3" aria-hidden="true">
+                    <span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span>
+                </div>
+                <div id="calendar-grid" class="calendar-grid" data-calendar-events="{{ json_encode($sample['calendarEvents'], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"></div>
+                <div class="calendar-legend">
+                    <span><i class="legend-dot"></i> Panen</span>
+                    <span><i class="legend-dot is-fertilizer"></i> Pemupukan</span>
+                </div>
+                <h3 class="upcoming-title">Akan datang</h3>
+                <div class="upcoming-list">
+                    @foreach ($sample['upcoming'] as $event)
+                        <div class="upcoming-item">
+                            <span @class(['upcoming-date', 'is-harvest' => $event['type'] === 'panen', 'is-fertilizer' => $event['type'] === 'pupuk'])>{{ $event['date'] }}</span>
+                            <span class="upcoming-copy">
+                                <strong>{{ $event['title'] }}</strong>
+                                <span>{{ $event['location'] }}</span>
+                            </span>
+                        </div>
+                    @endforeach
+                </div>
+                <p class="data-note">Jadwal ini adalah data contoh.</p>
+            </section>
+        </aside>
+    </div>
 @endsection
