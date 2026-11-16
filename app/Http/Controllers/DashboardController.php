@@ -21,20 +21,18 @@ class DashboardController extends Controller
             ->map(fn (int $offset): Carbon => $currentMonth->copy()->subMonths($offset));
         $monthKeys = $months->map(fn (Carbon $month): string => $month->format('Y-m'));
         $monthLabels = $months->map(fn (Carbon $month): string => self::MONTH_NAMES[$month->month - 1])->all();
+        $rangeStart = $months->first()->toDateString();
+        $rangeEnd = $currentMonth->copy()->endOfMonth()->toDateString();
 
         $panensSixMonths = $user->panens()
             ->with('kebun:id,nama,lokasi,luas_ha')
-            ->whereBetween('tanggal', [
-                $months->first()->toDateString(),
-                $currentMonth->copy()->endOfMonth()->toDateString(),
-            ])
+            ->whereDate('tanggal', '>=', $rangeStart)
+            ->whereDate('tanggal', '<=', $rangeEnd)
             ->get(['id', 'kebun_id', 'tanggal', 'jumlah_tandan', 'berat_kg', 'harga_per_kg', 'pembeli']);
 
         $biayasSixMonths = $user->biayas()
-            ->whereBetween('tanggal', [
-                $months->first()->toDateString(),
-                $currentMonth->copy()->endOfMonth()->toDateString(),
-            ])
+            ->whereDate('tanggal', '>=', $rangeStart)
+            ->whereDate('tanggal', '<=', $rangeEnd)
             ->get(['id', 'tanggal', 'kategori', 'nominal']);
 
         $harvestByMonth = $this->sumByMonth($panensSixMonths, fn ($panen): float => (float) $panen->berat_kg);

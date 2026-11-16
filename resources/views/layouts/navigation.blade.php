@@ -54,14 +54,14 @@
             </span>
             Panen
         </a>
-        <span class="sidebar-disabled" aria-disabled="true">
+        <a href="{{ route('biaya.index') }}" @class(['sidebar-link', 'sidebar-link-active' => request()->routeIs('biaya.*')])>
             <span class="sidebar-icon">
                 <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M12 3.5v17m4-13c0-1.8-1.8-3-4-3s-4 1.2-4 3 1.5 2.5 4 3.5 4 1.7 4 3.5-1.8 3-4 3-4-1.2-4-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
                 </svg>
             </span>
             Biaya
-        </span>
+        </a>
         <span class="sidebar-disabled" aria-disabled="true">
             <span class="sidebar-icon">
                 <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">

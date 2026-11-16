@@ -102,7 +102,7 @@
                                     </span>
                                     <span>{{ in_array($chartKey, ['fertilizer', 'wages', 'expenses'], true) ? 'Belum ada data biaya' : 'Belum ada data panen' }}</span>
                                     @if (in_array($chartKey, ['fertilizer', 'wages', 'expenses'], true))
-                                        <button type="button" class="chart-empty-action" disabled>Catat biaya</button>
+                                        <a href="{{ route('biaya.create') }}" class="text-link">Catat biaya</a>
                                     @elseif ($chartKey === 'harvest')
                                         <a href="{{ route('panen.create') }}" class="text-link">Catat panen</a>
                                     @endif
