@@ -46,14 +46,14 @@
             </span>
             Kebun
         </a>
-        <span class="sidebar-disabled" aria-disabled="true">
+        <a href="{{ route('panen.index') }}" @class(['sidebar-link', 'sidebar-link-active' => request()->routeIs('panen.*')])>
             <span class="sidebar-icon">
                 <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M12 20.5V10m0 5c-1.6-4-4.8-6-9-5.8 1.1 4.1 4.1 6.1 9 6.3Zm0-2.3c1.7-4.1 5-6 9-5.5-1.2 4.1-4.2 6-9 6Zm0-6c-.5-2-1.7-3.7-3.6-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </span>
             Panen
-        </span>
+        </a>
         <span class="sidebar-disabled" aria-disabled="true">
             <span class="sidebar-icon">
                 <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">

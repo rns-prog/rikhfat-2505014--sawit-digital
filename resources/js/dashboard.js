@@ -77,7 +77,10 @@ function initCharts() {
                     },
                 },
             },
-            scales: isDoughnut || isSparkline ? {} : isHorizontal ? {
+            scales: isSparkline ? {
+                x: { display: false },
+                y: { display: false },
+            } : isDoughnut ? {} : isHorizontal ? {
                 x: {
                     beginAtZero: true,
                     grid: { color: '#EEF1F7' },

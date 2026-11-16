@@ -36,4 +36,9 @@ class Panen extends Model
     {
         return $this->belongsTo(Kebun::class);
     }
+
+    public function getPendapatanAttribute(): float
+    {
+        return (float) $this->berat_kg * (float) $this->harga_per_kg;
+    }
 }

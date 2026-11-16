@@ -360,6 +360,19 @@
         white-space: nowrap;
     }
 
+    .trend-negative {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border-radius: 999px;
+        background: rgb(229 72 77 / 15%);
+        padding: 3px 8px;
+        color: #ffb1b3;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
     .hero-watermark {
         position: absolute;
         bottom: -34px;
@@ -858,6 +871,43 @@
         padding: 14px 12px;
         color: var(--muted);
         font-size: 13px;
+    }
+
+    .chart-empty-state {
+        display: flex;
+        min-height: 175px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 9px;
+        background: #f8faff;
+        padding: 16px;
+        color: var(--muted);
+        font-size: 13px;
+        text-align: center;
+    }
+
+    .chart-empty-icon {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--green-soft);
+        color: var(--green);
+    }
+
+    .chart-empty-action {
+        min-height: 36px;
+        border: 1px solid #d6dce8;
+        border-radius: 8px;
+        background: #f0f2f7;
+        padding: 6px 12px;
+        color: #8791a7;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: not-allowed;
     }
 
     .form-control {

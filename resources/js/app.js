@@ -1,5 +1,6 @@
 import './bootstrap';
 import './dashboard';
+import './panen';
 
 import Alpine from 'alpinejs';
 
