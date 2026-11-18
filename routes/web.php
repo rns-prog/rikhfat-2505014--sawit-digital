@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\KebunController;
+use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PanenController;
 use Illuminate\Support\Facades\Route;
@@ -15,11 +16,13 @@ Route::get('/dashboard', DashboardController::class)->middleware('auth')->name('
 
 Route::middleware('auth')->group(function () {
     Route::get('biaya/preview-upah', [BiayaController::class, 'previewUpah'])->name('biaya.preview');
+    Route::get('jadwal/calendar-events', [JadwalController::class, 'calendarEvents'])->name('jadwal.calendar-events');
     Route::get('laporan/pdf', [LaporanController::class, 'pdf'])->name('laporan.pdf');
     Route::get('laporan', [LaporanController::class, 'index'])->name('laporan');
     Route::resource('kebun', KebunController::class)->except('show');
     Route::resource('panen', PanenController::class)->except('show');
     Route::resource('biaya', BiayaController::class)->except('show');
+    Route::resource('jadwal', JadwalController::class)->except('show');
 });
 
 require __DIR__.'/auth.php';

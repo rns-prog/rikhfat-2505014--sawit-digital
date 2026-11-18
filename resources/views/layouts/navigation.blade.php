@@ -70,7 +70,7 @@
             </span>
             Laporan
         </a>
-        <span class="sidebar-disabled" aria-disabled="true">
+        <a href="{{ route('jadwal.index') }}" @class(['sidebar-link', 'sidebar-link-active' => request()->routeIs('jadwal.*')])>
             <span class="sidebar-icon">
                 <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <rect x="3.5" y="5" width="17" height="15.5" rx="2" stroke="currentColor" stroke-width="1.7"/>
@@ -78,7 +78,7 @@
                 </svg>
             </span>
             Jadwal
-        </span>
+        </a>
     </nav>
 
     <div class="sidebar-help">

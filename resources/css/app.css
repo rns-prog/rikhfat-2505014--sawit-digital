@@ -705,9 +705,19 @@
         position: relative;
         display: grid;
         min-height: 34px;
+        align-content: center;
         place-items: center;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
         color: #38435a;
         font-size: 12px;
+        cursor: pointer;
+    }
+
+    .calendar-day:hover,
+    .calendar-day.is-selected {
+        background: #f0f3f9;
     }
 
     .calendar-day-number {
@@ -728,20 +738,23 @@
         color: #adb5c5;
     }
 
-    .calendar-day.has-event::after {
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        width: 5px;
-        height: 5px;
-        transform: translateX(-50%);
-        border-radius: 50%;
-        background: var(--green);
-        content: '';
+    .calendar-event-markers {
+        display: flex;
+        min-height: 5px;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
     }
 
-    .calendar-day.has-fertilizer::after {
-        background: var(--positive);
+    .calendar-event-markers i {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #1F4FB5;
+    }
+
+    .calendar-event-markers i.is-fertilizer {
+        background: #1FA45B;
     }
 
     .calendar-controls {
@@ -793,7 +806,11 @@
         width: 7px;
         height: 7px;
         border-radius: 50%;
-        background: var(--green);
+        background: #1F4FB5;
+    }
+
+    .legend-dot.is-harvest {
+        background: #1F4FB5;
     }
 
     .legend-dot.is-fertilizer {
@@ -833,8 +850,8 @@
     }
 
     .upcoming-date.is-harvest {
-        background: var(--green-soft);
-        color: var(--green);
+        background: #E6EEFB;
+        color: #1F4FB5;
     }
 
     .upcoming-date.is-fertilizer {
@@ -851,6 +868,25 @@
         color: var(--text);
         font-size: 12px;
         font-weight: 600;
+    }
+
+    .upcoming-countdown {
+        color: var(--text);
+        font-weight: 600;
+    }
+
+    .selected-day-list {
+        display: grid;
+        gap: 8px;
+    }
+
+    .selected-day-item {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        border-radius: 8px;
+        background: #f8faff;
+        padding: 8px;
     }
 
     .upcoming-copy span {

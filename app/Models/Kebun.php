@@ -36,4 +36,9 @@ class Kebun extends Model
     {
         return $this->hasMany(Biaya::class);
     }
+
+    public function jadwals(): HasMany
+    {
+        return $this->hasMany(Jadwal::class);
+    }
 }

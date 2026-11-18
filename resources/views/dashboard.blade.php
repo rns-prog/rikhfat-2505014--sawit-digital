@@ -3,6 +3,22 @@
 @section('title', 'Dashboard')
 
 @section('content')
+    @if ($schedule['nearest'])
+        <div class="schedule-strip">
+            <div class="schedule-strip-message">
+                <span class="schedule-countdown">{{ $schedule['nearest']['countdown'] }}</span>
+                <span>
+                    {{ $schedule['nearest']['type'] === 'pupuk' ? 'Pemupukan' : 'Panen' }} berikutnya
+                    @if ($schedule['nearest']['kebun'])
+                        di {{ $schedule['nearest']['kebun'] }}
+                    @endif
+                    · {{ \Illuminate\Support\Carbon::parse($schedule['nearest']['date'])->format('d/m/Y') }}
+                </span>
+            </div>
+            <a href="{{ route('jadwal.index') }}">Lihat jadwal</a>
+        </div>
+    @endif
+
     <div class="dashboard-columns">
         <div class="dashboard-center">
             <section class="revenue-hero" aria-label="Pendapatan bulan ini">
@@ -210,9 +226,44 @@
                 <div class="calendar-weekdays mt-3" aria-hidden="true">
                     <span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span>
                 </div>
-                <div id="calendar-grid" class="calendar-grid" data-calendar-events="[]"></div>
+                <div
+                    id="calendar-grid"
+                    class="calendar-grid"
+                    data-calendar-month="{{ $schedule['month'] }}"
+                    data-calendar-events="{{ json_encode($schedule['events'], JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}"
+                    data-calendar-events-url="{{ route('jadwal.calendar-events') }}"
+                ></div>
+                <div class="calendar-legend">
+                    <span><i class="legend-dot is-harvest"></i>Panen</span>
+                    <span><i class="legend-dot is-fertilizer"></i>Pemupukan</span>
+                </div>
+                <div class="calendar-day-events" aria-live="polite">
+                    <h3 id="calendar-selected-date" class="upcoming-title"></h3>
+                    <div id="calendar-day-events-list" class="selected-day-list"></div>
+                </div>
                 <h3 class="upcoming-title">Akan datang</h3>
-                <p class="empty-note">Belum ada jadwal</p>
+                @if ($schedule['upcoming']->isEmpty())
+                    <p class="empty-note">Belum ada jadwal</p>
+                @else
+                    <div class="upcoming-list">
+                        @foreach ($schedule['upcoming'] as $event)
+                            <div class="upcoming-item">
+                                <span @class([
+                                    'upcoming-date',
+                                    'is-harvest' => $event['type'] === 'panen',
+                                    'is-fertilizer' => $event['type'] === 'pupuk',
+                                ])>{{ \Illuminate\Support\Carbon::parse($event['date'])->format('d/m') }}</span>
+                                <span class="upcoming-copy">
+                                    <strong>{{ $event['title'] }}</strong>
+                                    <span>
+                                        {{ $event['kebun'] ?? 'Semua kebun' }} ·
+                                        <span class="upcoming-countdown">{{ $event['countdown'] }}</span>
+                                    </span>
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </section>
         </aside>
     </div>

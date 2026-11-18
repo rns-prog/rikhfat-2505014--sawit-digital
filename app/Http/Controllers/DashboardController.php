@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Biaya;
+use App\Services\JadwalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -11,6 +12,8 @@ use Illuminate\View\View;
 class DashboardController extends Controller
 {
     private const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+    public function __construct(private readonly JadwalService $jadwalService) {}
 
     public function __invoke(Request $request): View
     {
@@ -107,6 +110,13 @@ class DashboardController extends Controller
             ->latest('id')
             ->limit(5)
             ->get(['id', 'kebun_id', 'tanggal', 'berat_kg', 'harga_per_kg', 'pembeli']);
+        $scheduleMonthStart = now()->startOfMonth();
+        $scheduleEvents = $this->jadwalService->eventsForRange(
+            $user,
+            $scheduleMonthStart,
+            $scheduleMonthStart->copy()->endOfMonth(),
+        );
+        $upcomingSchedules = $this->jadwalService->upcoming($user, today(), 5);
 
         $charts = [
             'harvest' => [
@@ -153,6 +163,12 @@ class DashboardController extends Controller
 
         return view('dashboard', [
             'kebuns' => $kebuns,
+            'schedule' => [
+                'month' => $scheduleMonthStart->format('Y-m'),
+                'events' => $scheduleEvents,
+                'upcoming' => $upcomingSchedules,
+                'nearest' => $upcomingSchedules->first(),
+            ],
             'dashboard' => [
                 'months' => $monthLabels,
                 'revenue' => [

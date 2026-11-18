@@ -165,12 +165,110 @@ function initCalendar() {
     }
 
     const monthLabel = document.querySelector('#calendar-month');
-    const events = JSON.parse(grid.dataset.calendarEvents);
-    const eventMap = new Map(events.map((event) => [event.date, event.type]));
+    const selectedDateLabel = document.querySelector('#calendar-selected-date');
+    const selectedEventsList = document.querySelector('#calendar-day-events-list');
+    const eventsUrl = grid.dataset.calendarEventsUrl;
+    let events = JSON.parse(grid.dataset.calendarEvents);
+    let eventMap = new Map();
     const now = new Date();
     const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    let displayedMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const initialMonth = grid.dataset.calendarMonth?.split('-').map(Number);
+    let displayedMonth = initialMonth
+        ? new Date(initialMonth[0], initialMonth[1] - 1, 1)
+        : new Date(now.getFullYear(), now.getMonth(), 1);
+    let selectedDate = todayKey;
+    let activeRequest;
     const monthFormatter = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' });
+    const dateFormatter = new Intl.DateTimeFormat('id-ID', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    });
+
+    const setEvents = (nextEvents) => {
+        events = nextEvents;
+        eventMap = new Map();
+        events.forEach((event) => {
+            const dateEvents = eventMap.get(event.date) || [];
+            dateEvents.push(event);
+            eventMap.set(event.date, dateEvents);
+        });
+    };
+
+    const renderSelectedDate = () => {
+        const selected = new Date(`${selectedDate}T00:00:00`);
+        selectedDateLabel.textContent = dateFormatter.format(selected);
+        selectedEventsList.replaceChildren();
+
+        const dateEvents = eventMap.get(selectedDate) || [];
+
+        if (dateEvents.length === 0) {
+            const empty = document.createElement('p');
+            empty.className = 'empty-note';
+            empty.textContent = 'Tidak ada jadwal pada tanggal ini.';
+            selectedEventsList.append(empty);
+            return;
+        }
+
+        dateEvents.forEach((event) => {
+            const item = document.createElement('div');
+            item.className = 'selected-day-item';
+            const marker = document.createElement('span');
+            marker.className = `legend-dot ${event.type === 'pupuk' ? 'is-fertilizer' : 'is-harvest'}`;
+            marker.setAttribute('aria-hidden', 'true');
+            const copy = document.createElement('span');
+            copy.className = 'upcoming-copy';
+            const title = document.createElement('strong');
+            title.textContent = event.title;
+            const estate = document.createElement('span');
+            estate.textContent = event.kebun || 'Semua kebun';
+            copy.append(title, estate);
+            item.append(marker, copy);
+            selectedEventsList.append(item);
+        });
+    };
+
+    const loadEventsForMonth = async () => {
+        if (!eventsUrl) {
+            return;
+        }
+
+        activeRequest?.abort();
+        activeRequest = new AbortController();
+        const monthKey = `${displayedMonth.getFullYear()}-${String(displayedMonth.getMonth() + 1).padStart(2, '0')}`;
+        grid.setAttribute('aria-busy', 'true');
+
+        try {
+            const url = new URL(eventsUrl, window.location.origin);
+            url.searchParams.set('bulan', monthKey);
+            const response = await fetch(url, {
+                headers: { Accept: 'application/json' },
+                signal: activeRequest.signal,
+            });
+
+            if (!response.ok) {
+                throw new Error('Jadwal kalender tidak dapat dimuat.');
+            }
+
+            const result = await response.json();
+            setEvents(result.events);
+            renderCalendar();
+            renderSelectedDate();
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                selectedEventsList.replaceChildren();
+                const message = document.createElement('p');
+                message.className = 'empty-note';
+                message.textContent = error.message || 'Jadwal kalender tidak dapat dimuat.';
+                selectedEventsList.append(message);
+            }
+        } finally {
+            grid.removeAttribute('aria-busy');
+        }
+    };
+
+    setEvents(events);
 
     const renderCalendar = () => {
         const year = displayedMonth.getFullYear();
@@ -207,20 +305,48 @@ function initCalendar() {
             }
 
             const dateKey = `${cellYear}-${String(cellMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const eventType = eventMap.get(dateKey);
-            const dayCell = document.createElement('span');
+            const dateEvents = eventMap.get(dateKey) || [];
+            const hasHarvest = dateEvents.some((event) => event.type === 'panen');
+            const hasFertilizer = dateEvents.some((event) => event.type === 'pupuk');
+            const dayCell = document.createElement('button');
+            dayCell.type = 'button';
             dayCell.className = 'calendar-day';
 
             if (muted) dayCell.classList.add('is-muted');
             if (dateKey === todayKey) dayCell.classList.add('is-today');
-            if (eventType) dayCell.classList.add('has-event');
-            if (eventType === 'pupuk') dayCell.classList.add('has-fertilizer');
+            if (hasHarvest) dayCell.classList.add('has-harvest');
+            if (hasFertilizer) dayCell.classList.add('has-fertilizer');
+            if (dateKey === selectedDate) dayCell.classList.add('is-selected');
 
             const number = document.createElement('span');
             number.className = 'calendar-day-number';
             number.textContent = String(day);
-            dayCell.append(number);
-            dayCell.setAttribute('aria-label', dateKey);
+            const markers = document.createElement('span');
+            markers.className = 'calendar-event-markers';
+            if (hasHarvest) {
+                const marker = document.createElement('i');
+                marker.className = 'is-harvest';
+                markers.append(marker);
+            }
+            if (hasFertilizer) {
+                const marker = document.createElement('i');
+                marker.className = 'is-fertilizer';
+                markers.append(marker);
+            }
+            dayCell.append(number, markers);
+            dayCell.setAttribute('aria-label', `${dateKey}${dateEvents.length ? `, ${dateEvents.length} jadwal` : ''}`);
+            dayCell.setAttribute('aria-pressed', String(dateKey === selectedDate));
+            dayCell.addEventListener('click', () => {
+                selectedDate = dateKey;
+                if (muted) {
+                    displayedMonth = new Date(cellYear, cellMonth, 1);
+                    renderCalendar();
+                    loadEventsForMonth();
+                } else {
+                    renderCalendar();
+                    renderSelectedDate();
+                }
+            });
             grid.append(dayCell);
         }
     };
@@ -232,11 +358,12 @@ function initCalendar() {
                 displayedMonth.getMonth() + Number(button.dataset.calendarStep),
                 1,
             );
-            renderCalendar();
+            loadEventsForMonth();
         });
     });
 
     renderCalendar();
+    renderSelectedDate();
 }
 
 function initSidebar() {
